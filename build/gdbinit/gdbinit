@@ -1,0 +1,2 @@
+source C:/esp32 project/bacnet_device/build/gdbinit/symbols
+source C:/esp32 project/bacnet_device/build/gdbinit/connect
