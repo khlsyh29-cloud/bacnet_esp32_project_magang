@@ -1,9 +1,10 @@
-#include "unistd.h"
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+
 #include "lwip/sockets.h"
 #include "lwip/netdb.h"
 #include "lwip/inet.h"
-#include <stdio.h>
-#include <string.h>
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -17,27 +18,41 @@
 #define WIFI_SSID "Meterin Workshop"
 #define WIFI_PASS "123456@#"
 
-static const char *TAG = "wifi";
+#define UDP_PORT 47808
+#define DEVICE_INSTANCE 301
+
+static const char *TAG = "BACNET";
+
 static volatile bool wifi_connected = false;
+static esp_ip4_addr_t got_ip;
+static bool ip_valid = false;
 
-static esp_event_handler_instance_t wifi_event_instance;
-static esp_event_handler_instance_t ip_event_instance;
-
-// ================= EVENT HANDLER =================
-static void wifi_event_handler(void *arg, esp_event_base_t event_base,
-                               int32_t event_id, void *event_data)
+// ================= WIFI EVENT =================
+static void wifi_event_handler(void *arg,
+                               esp_event_base_t event_base,
+                               int32_t event_id,
+                               void *event_data)
 {
-    if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED)
+    if (event_base == WIFI_EVENT &&
+        event_id == WIFI_EVENT_STA_DISCONNECTED)
     {
         wifi_connected = false;
+        ip_valid = false;
         printf("WiFi disconnected... reconnecting\n");
         esp_wifi_connect();
     }
 
-    if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP)
+    if (event_base == IP_EVENT &&
+        event_id == IP_EVENT_STA_GOT_IP)
     {
+        ip_event_got_ip_t *event = (ip_event_got_ip_t *)event_data;
+
         wifi_connected = true;
-        printf("WiFi connected!\n");
+        got_ip = event->ip_info.ip;
+        ip_valid = true;
+
+        ESP_LOGI(TAG, "WiFi connected!");
+        ESP_LOGI(TAG, "IP: " IPSTR, IP2STR(&got_ip));
     }
 }
 
@@ -49,21 +64,19 @@ void wifi_init_sta(void)
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     ESP_ERROR_CHECK(esp_wifi_init(&cfg));
 
-    ESP_ERROR_CHECK(
-        esp_event_handler_instance_register(
-            WIFI_EVENT,
-            ESP_EVENT_ANY_ID,
-            &wifi_event_handler,
-            NULL,
-            &wifi_event_instance));
+    esp_event_handler_instance_register(
+        WIFI_EVENT,
+        ESP_EVENT_ANY_ID,
+        &wifi_event_handler,
+        NULL,
+        NULL);
 
-    ESP_ERROR_CHECK(
-        esp_event_handler_instance_register(
-            IP_EVENT,
-            IP_EVENT_STA_GOT_IP,
-            &wifi_event_handler,
-            NULL,
-            &ip_event_instance));
+    esp_event_handler_instance_register(
+        IP_EVENT,
+        IP_EVENT_STA_GOT_IP,
+        &wifi_event_handler,
+        NULL,
+        NULL);
 
     wifi_config_t wifi_config = {
         .sta = {
@@ -82,23 +95,75 @@ void wifi_init_sta(void)
     ESP_LOGI(TAG, "Connecting to WiFi...");
 }
 
-// ================= UDP LISTENER =================
-void udp_test_task(void *pvParameters)
+// ================= WIFI STATUS PRINT =================
+void print_wifi_status()
 {
-    char rx_buffer[128];
-    char addr_str[128];
+    if (wifi_connected && ip_valid)
+    {
+        printf("WiFi STATUS: CONNECTED\n");
+        printf("IP: %d.%d.%d.%d\n",
+               IP2STR(&got_ip));
+    }
+    else
+    {
+        printf("WiFi STATUS: NOT CONNECTED\n");
+    }
+}
+
+// ================= I-AM RESPONSE =================
+void bacnet_send_i_am(struct sockaddr_in *dest_addr)
+{
+    int sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
+    if (sock < 0) return;
+
+    uint8_t packet[] = {
+        0x81, 0x0A,
+
+        0x00, 0x11,   // length
+
+        0x01,         // NPDU
+        0x00,         // no network layer msg
+
+        0x10,         // I-AM
+
+        // Device Instance (301)
+        0x00, 0x01, 0x2D,
+
+        // Max APDU length
+        0x04, 0x00,
+
+        // segmentation supported = none
+        0x00,
+
+        // vendor ID (random simple)
+        0x00, 0x00
+    };
+
+    sendto(sock, packet, sizeof(packet), 0,
+           (struct sockaddr *)dest_addr,
+           sizeof(*dest_addr));
+
+    printf("I-AM SENT OK\n");
+
+    close(sock);
+}
+
+// ================= UDP TASK =================
+void udp_task(void *pv)
+{
+    char rx[128];
+    char ip_str[32];
 
     struct sockaddr_in addr;
-    addr.sin_addr.s_addr = htonl(INADDR_ANY);
     addr.sin_family = AF_INET;
-    addr.sin_port = htons(47808);
+    addr.sin_port = htons(UDP_PORT);
+    addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
     int sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
     if (sock < 0)
     {
-        printf("Socket create failed\n");
+        printf("Socket failed\n");
         vTaskDelete(NULL);
-        return;
     }
 
     int opt = 1;
@@ -106,33 +171,40 @@ void udp_test_task(void *pvParameters)
 
     if (bind(sock, (struct sockaddr *)&addr, sizeof(addr)) < 0)
     {
-        printf("Socket bind failed\n");
+        printf("Bind failed\n");
         close(sock);
         vTaskDelete(NULL);
-        return;
     }
 
-    printf("UDP listening on port 47808...\n");
+    printf("UDP listening on %d...\n", UDP_PORT);
 
-    
-    while (!wifi_connected)
+    while (1)
     {
-        
-    printf("Waiting WiFi...\n");
-    vTaskDelay(pdMS_TO_TICKS(500));
-}
-    {
-        struct sockaddr_in source_addr;
-        socklen_t socklen = sizeof(source_addr);
+        struct sockaddr_in source;
+        socklen_t len = sizeof(source);
 
-        int len = recvfrom(sock, rx_buffer, sizeof(rx_buffer) - 1, 0,
-                           (struct sockaddr *)&source_addr, &socklen);
+        int r = recvfrom(sock, rx, sizeof(rx), 0,
+                         (struct sockaddr *)&source, &len);
 
-        if (len > 0)
+        if (r > 0)
         {
-            rx_buffer[len] = 0;
-            inet_ntoa_r(source_addr.sin_addr, addr_str, sizeof(addr_str));
-            printf("Received from %s: %s\n", addr_str, rx_buffer);
+            inet_ntoa_r(source.sin_addr, ip_str, sizeof(ip_str));
+
+            printf("Received from %s: ", ip_str);
+            for (int i = 0; i < r; i++)
+                printf("%02X ", (unsigned char)rx[i]);
+            printf("\n");
+
+            // WHO-IS detection (simple)
+            if ((unsigned char)rx[3] == 0x00 || (unsigned char)rx[4] == 0x0C)
+            {
+                printf("WHO-IS detected -> sending I-AM\n");
+                bacnet_send_i_am(&source);
+            }
+        }
+        else
+        {
+            vTaskDelay(pdMS_TO_TICKS(100));
         }
     }
 }
@@ -146,10 +218,10 @@ void bacnet_send_broadcast()
         return;
     }
 
-    struct sockaddr_in dest_addr;
-    dest_addr.sin_addr.s_addr = inet_addr("255.255.255.255");
-    dest_addr.sin_family = AF_INET;
-    dest_addr.sin_port = htons(47808);
+    struct sockaddr_in dest;
+    dest.sin_family = AF_INET;
+    dest.sin_port = htons(UDP_PORT);
+    dest.sin_addr.s_addr = inet_addr("255.255.255.255");
 
     int sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
     if (sock < 0)
@@ -158,24 +230,23 @@ void bacnet_send_broadcast()
         return;
     }
 
-    int broadcastEnable = 1;
-    setsockopt(sock, SOL_SOCKET, SO_BROADCAST,
-               &broadcastEnable, sizeof(broadcastEnable));
+    int b = 1;
+    setsockopt(sock, SOL_SOCKET, SO_BROADCAST, &b, sizeof(b));
 
-    uint8_t bacnet_packet[] = {
-        0x81, 0x0A,
+    uint8_t who_is[] = {
+        0x81, 0x0B,
         0x00, 0x0C,
         0x01,
         0x20,
         0xFF, 0xFF,
         0x00,
         0xFF,
-        0x10,
-        0x08
+        0x10, 0x08
     };
 
-    sendto(sock, bacnet_packet, sizeof(bacnet_packet), 0,
-           (struct sockaddr *)&dest_addr, sizeof(dest_addr));
+    sendto(sock, who_is, sizeof(who_is), 0,
+           (struct sockaddr *)&dest,
+           sizeof(dest));
 
     printf("BACnet Who-Is broadcast sent!\n");
 
@@ -183,7 +254,7 @@ void bacnet_send_broadcast()
 }
 
 // ================= MAIN =================
-void app_main(void)
+void app_main()
 {
     ESP_ERROR_CHECK(nvs_flash_init());
     ESP_ERROR_CHECK(esp_netif_init());
@@ -191,16 +262,20 @@ void app_main(void)
 
     wifi_init_sta();
 
-    vTaskDelay(pdMS_TO_TICKS(5000));
+    vTaskDelay(pdMS_TO_TICKS(3000));
 
-    xTaskCreate(udp_test_task, "udp_task", 4096, NULL, 5, NULL);
+    xTaskCreate(udp_task, "udp_task", 8192, NULL, 5, NULL);
 
     printf("START SYSTEM...\n");
 
     while (1)
     {
+        print_wifi_status();
+
         printf("Main loop running...\n");
+
         bacnet_send_broadcast();
+
         vTaskDelay(pdMS_TO_TICKS(5000));
     }
 }
