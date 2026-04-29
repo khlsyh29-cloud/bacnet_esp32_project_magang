@@ -190,9 +190,20 @@ void udp_task(void *pv)
         {
             inet_ntoa_r(source.sin_addr, ip_str, sizeof(ip_str));
 
-            printf("Received from %s: ", ip_str);
+            printf("Received from %s (HEX): ", ip_str);
             for (int i = 0; i < r; i++)
                 printf("%02X ", (unsigned char)rx[i]);
+            printf("\n");
+            
+            printf("Received from %s (ASCII): ", ip_str);
+            for (int i = 0; i < r; i++)
+            {
+                unsigned char c = (unsigned char)rx[i];
+                if (c >= 32 && c <= 126)
+                    printf("%c", c);
+                else
+                    printf(".");
+            }
             printf("\n");
 
             // WHO-IS detection (simple)
