@@ -1275,3 +1275,71 @@
 900	1070	7991465421807330	bootloader-prefix/src/bootloader-stamp/bootloader-done	8dca87c87444354a
 900	1070	7991465421807330	C:/esp32 project/bacnet_device/build/CMakeFiles/bootloader-complete	8dca87c87444354a
 900	1070	7991465421807330	C:/esp32 project/bacnet_device/build/bootloader-prefix/src/bootloader-stamp/bootloader-done	8dca87c87444354a
+1566	2174	7991488712579744	bootloader-prefix/src/bootloader-stamp/bootloader-build	9b9e7565e0b84de9
+1566	2174	7991488712579744	bootloader/bootloader.elf	9b9e7565e0b84de9
+1566	2174	7991488712579744	bootloader/bootloader.bin	9b9e7565e0b84de9
+1566	2174	7991488712579744	bootloader/bootloader.map	9b9e7565e0b84de9
+1566	2174	7991488712579744	C:/esp32 project/bacnet_device/build/bootloader-prefix/src/bootloader-stamp/bootloader-build	9b9e7565e0b84de9
+1566	2174	7991488712579744	C:/esp32 project/bacnet_device/build/bootloader/bootloader.elf	9b9e7565e0b84de9
+1566	2174	7991488712579744	C:/esp32 project/bacnet_device/build/bootloader/bootloader.bin	9b9e7565e0b84de9
+1566	2174	7991488712579744	C:/esp32 project/bacnet_device/build/bootloader/bootloader.map	9b9e7565e0b84de9
+2176	2260	7991488718688478	bootloader-prefix/src/bootloader-stamp/bootloader-install	b6cb5c23de3adcc1
+2176	2260	7991488718688478	C:/esp32 project/bacnet_device/build/bootloader-prefix/src/bootloader-stamp/bootloader-install	b6cb5c23de3adcc1
+2261	2505	7991488721883646	CMakeFiles/bootloader-complete	8dca87c87444354a
+2261	2505	7991488721883646	bootloader-prefix/src/bootloader-stamp/bootloader-done	8dca87c87444354a
+2261	2505	7991488721883646	C:/esp32 project/bacnet_device/build/CMakeFiles/bootloader-complete	8dca87c87444354a
+2261	2505	7991488721883646	C:/esp32 project/bacnet_device/build/bootloader-prefix/src/bootloader-stamp/bootloader-done	8dca87c87444354a
+543	4340	7991488702373717	esp-idf/main/CMakeFiles/__idf_main.dir/bacnet_device.c.obj	9286eae93551d84a
+4341	4610	7991488740337099	esp-idf/main/libmain.a	f5620c3bc0aa3397
+4610	30167	7991488997831823	esp-idf/esp_system/ld/sections.ld	ba6323b756567dc0
+4610	30167	7991488997831823	C:/esp32 project/bacnet_device/build/esp-idf/esp_system/ld/sections.ld	ba6323b756567dc0
+30168	35133	7991488998609077	bacnet_device.elf	b65ca578f94c15e0
+35134	35749	7991489054343585	.bin_timestamp	a1029b00603f09a9
+35134	35749	7991489054343585	C:/esp32 project/bacnet_device/build/.bin_timestamp	a1029b00603f09a9
+35749	35904	7991489054417808	esp-idf/esptool_py/CMakeFiles/app_check_size	a2a8350220ddfda1
+35749	35904	7991489054417808	C:/esp32 project/bacnet_device/build/esp-idf/esptool_py/CMakeFiles/app_check_size	a2a8350220ddfda1
+35904	59280	7991489055976710	CMakeFiles/flash	1db79eeeac770aaf
+35904	59280	7991489055976710	C:/esp32 project/bacnet_device/build/CMakeFiles/flash	1db79eeeac770aaf
+396	621	7991500174629983	esp-idf/esptool_py/CMakeFiles/app_check_size	a2a8350220ddfda1
+396	621	7991500174629983	C:/esp32 project/bacnet_device/build/esp-idf/esptool_py/CMakeFiles/app_check_size	a2a8350220ddfda1
+377	709	7991500174450498	bootloader-prefix/src/bootloader-stamp/bootloader-build	9b9e7565e0b84de9
+377	709	7991500174450498	bootloader/bootloader.elf	9b9e7565e0b84de9
+377	709	7991500174450498	bootloader/bootloader.bin	9b9e7565e0b84de9
+377	709	7991500174450498	bootloader/bootloader.map	9b9e7565e0b84de9
+377	709	7991500174450498	C:/esp32 project/bacnet_device/build/bootloader-prefix/src/bootloader-stamp/bootloader-build	9b9e7565e0b84de9
+377	709	7991500174450498	C:/esp32 project/bacnet_device/build/bootloader/bootloader.elf	9b9e7565e0b84de9
+377	709	7991500174450498	C:/esp32 project/bacnet_device/build/bootloader/bootloader.bin	9b9e7565e0b84de9
+377	709	7991500174450498	C:/esp32 project/bacnet_device/build/bootloader/bootloader.map	9b9e7565e0b84de9
+710	779	7991500177779352	bootloader-prefix/src/bootloader-stamp/bootloader-install	b6cb5c23de3adcc1
+710	779	7991500177779352	C:/esp32 project/bacnet_device/build/bootloader-prefix/src/bootloader-stamp/bootloader-install	b6cb5c23de3adcc1
+779	948	7991500180081910	CMakeFiles/bootloader-complete	8dca87c87444354a
+779	948	7991500180081910	bootloader-prefix/src/bootloader-stamp/bootloader-done	8dca87c87444354a
+779	948	7991500180081910	C:/esp32 project/bacnet_device/build/CMakeFiles/bootloader-complete	8dca87c87444354a
+779	948	7991500180081910	C:/esp32 project/bacnet_device/build/bootloader-prefix/src/bootloader-stamp/bootloader-done	8dca87c87444354a
+948	24647	7991500180170450	CMakeFiles/flash	1db79eeeac770aaf
+948	24647	7991500180170450	C:/esp32 project/bacnet_device/build/CMakeFiles/flash	1db79eeeac770aaf
+1287	1750	7991502966430528	bootloader-prefix/src/bootloader-stamp/bootloader-build	9b9e7565e0b84de9
+1287	1750	7991502966430528	bootloader/bootloader.elf	9b9e7565e0b84de9
+1287	1750	7991502966430528	bootloader/bootloader.bin	9b9e7565e0b84de9
+1287	1750	7991502966430528	bootloader/bootloader.map	9b9e7565e0b84de9
+1287	1750	7991502966430528	C:/esp32 project/bacnet_device/build/bootloader-prefix/src/bootloader-stamp/bootloader-build	9b9e7565e0b84de9
+1287	1750	7991502966430528	C:/esp32 project/bacnet_device/build/bootloader/bootloader.elf	9b9e7565e0b84de9
+1287	1750	7991502966430528	C:/esp32 project/bacnet_device/build/bootloader/bootloader.bin	9b9e7565e0b84de9
+1287	1750	7991502966430528	C:/esp32 project/bacnet_device/build/bootloader/bootloader.map	9b9e7565e0b84de9
+1751	1827	7991502971071658	bootloader-prefix/src/bootloader-stamp/bootloader-install	b6cb5c23de3adcc1
+1751	1827	7991502971071658	C:/esp32 project/bacnet_device/build/bootloader-prefix/src/bootloader-stamp/bootloader-install	b6cb5c23de3adcc1
+1827	1992	7991502973403329	CMakeFiles/bootloader-complete	8dca87c87444354a
+1827	1992	7991502973403329	bootloader-prefix/src/bootloader-stamp/bootloader-done	8dca87c87444354a
+1827	1992	7991502973403329	C:/esp32 project/bacnet_device/build/CMakeFiles/bootloader-complete	8dca87c87444354a
+1827	1992	7991502973403329	C:/esp32 project/bacnet_device/build/bootloader-prefix/src/bootloader-stamp/bootloader-done	8dca87c87444354a
+276	3202	7991502956330070	esp-idf/main/CMakeFiles/__idf_main.dir/bacnet_device.c.obj	9286eae93551d84a
+3203	3409	7991502985580999	esp-idf/main/libmain.a	f5620c3bc0aa3397
+3409	27618	7991503228960332	esp-idf/esp_system/ld/sections.ld	ba6323b756567dc0
+3409	27618	7991503228960332	C:/esp32 project/bacnet_device/build/esp-idf/esp_system/ld/sections.ld	ba6323b756567dc0
+27619	32494	7991503229742138	bacnet_device.elf	b65ca578f94c15e0
+32495	33186	7991503285345316	.bin_timestamp	a1029b00603f09a9
+32495	33186	7991503285345316	C:/esp32 project/bacnet_device/build/.bin_timestamp	a1029b00603f09a9
+33186	33360	7991503285424063	esp-idf/esptool_py/CMakeFiles/app_check_size	a2a8350220ddfda1
+33186	33360	7991503285424063	C:/esp32 project/bacnet_device/build/esp-idf/esptool_py/CMakeFiles/app_check_size	a2a8350220ddfda1
+33360	56048	7991503287156847	CMakeFiles/flash	1db79eeeac770aaf
+33360	56048	7991503287156847	C:/esp32 project/bacnet_device/build/CMakeFiles/flash	1db79eeeac770aaf
