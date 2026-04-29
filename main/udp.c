@@ -66,11 +66,18 @@ void udp_task(void *pv)
             }
             printf("\n");
 
-            // WHO-IS detection (simple)
-            if ((unsigned char)rx[3] == 0x00 || (unsigned char)rx[4] == 0x0C)
+            // WHO-IS detection - check APDU type and service choice
+            // Packet structure: BVLC(2) + Length(2) + NPDU(varies) + APDU
+            // rx[10] = APDU type (0x10 = Unconfirmed-Request)
+            // rx[11] = Service choice (0x08 = WHO-IS, or 0x00 for filtered WHO-IS)
+            if (r >= 12 && (unsigned char)rx[10] == 0x10)
             {
-                printf("WHO-IS detected -> sending I-AM\n");
-                bacnet_send_i_am(&source);
+                unsigned char service = (unsigned char)rx[11];
+                if (service == 0x08 || service == 0x00)  // WHO-IS service
+                {
+                    printf("WHO-IS detected -> sending I-AM\n");
+                    bacnet_send_i_am(&source);
+                }
             }
         }
         else
