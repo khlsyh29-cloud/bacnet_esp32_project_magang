@@ -1,7 +1,7 @@
 {
     "version":            "1.2",
     "project_name":       "bacnet_device",
-    "project_version":    "1",
+    "project_version":    "3b43d1d-dirty",
     "project_path":       "C:/esp32 project/bacnet_device",
     "idf_path":           "C:/Espressif/frameworks/esp-idf-v5.5.4",
     "build_dir":          "C:/esp32 project/bacnet_device/build",
@@ -1240,7 +1240,7 @@
             "managed_reqs": [],
             "managed_priv_reqs": [],
             "file": "C:/esp32 project/bacnet_device/build/esp-idf/main/libmain.a",
-            "sources": [ "C:/esp32 project/bacnet_device/main/bacnet_device.c" ],
+            "sources": [ "C:/esp32 project/bacnet_device/main/bacnet_device.c", "C:/esp32 project/bacnet_device/main/wifi.c", "C:/esp32 project/bacnet_device/main/bacnet.c", "C:/esp32 project/bacnet_device/main/udp.c" ],
             "include_dirs": [ "." ]
         },
         "mbedtls": {
