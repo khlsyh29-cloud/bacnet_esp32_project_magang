@@ -1,3 +1,9 @@
 {
-    "idf.currentSetup": "C:/Espressif/frameworks/esp-idf-v5.5.4/"
+  "idf.currentSetup": "C:/Espressif/frameworks/esp-idf-v5.5.4/",
+  "clangd.path": "C:\\Espressif\\tools\\esp-clang\\esp-19.1.2_20250312\\esp-clang\\bin\\clangd.exe",
+  "clangd.arguments": [
+    "--background-index",
+    "--query-driver=**",
+    "--compile-commands-dir=c:\\esp32 project\\bacnet_device\\build"
+  ]
 }
