@@ -5,8 +5,8 @@
 #include "esp_netif.h"
 #include "lwip/inet.h"
 
-#define WIFI_SSID "Meterin Workshop"
-#define WIFI_PASS "123456@#"
+#define WIFI_SSID "Mikhaila"
+#define WIFI_PASS "muayyad2312994"
 
 static const char *TAG = "WIFI";
 
