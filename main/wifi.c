@@ -5,8 +5,8 @@
 #include "esp_netif.h"
 #include "lwip/inet.h"
 
-#define WIFI_SSID "Mikhaila"
-#define WIFI_PASS "muayyad2312994"
+#define WIFI_SSID "Meterin Workshop"
+#define WIFI_PASS "123456@#"
 
 static const char *TAG = "WIFI";
 
@@ -15,22 +15,26 @@ static esp_ip4_addr_t got_ip;
 static bool ip_valid = false;
 
 // ================= WIFI EVENT HANDLER =================
-static void wifi_event_handler(void *arg,
+static void wifi_event_handler(void* arg,
                                esp_event_base_t event_base,
                                int32_t event_id,
-                               void *event_data)
+                               void* event_data)
 {
     if (event_base == WIFI_EVENT &&
         event_id == WIFI_EVENT_STA_DISCONNECTED)
     {
+        wifi_event_sta_disconnected_t *disconn =
+            (wifi_event_sta_disconnected_t *)event_data;
+
         wifi_connected = false;
         ip_valid = false;
-        printf("WiFi disconnected... reconnecting\n");
+
+        ESP_LOGI("WIFI", "Disconnected, reason: %d", disconn->reason);
+
         esp_wifi_connect();
     }
-
-    if (event_base == IP_EVENT &&
-        event_id == IP_EVENT_STA_GOT_IP)
+    else if (event_base == IP_EVENT &&
+             event_id == IP_EVENT_STA_GOT_IP)
     {
         ip_event_got_ip_t *event = (ip_event_got_ip_t *)event_data;
 
@@ -38,8 +42,8 @@ static void wifi_event_handler(void *arg,
         got_ip = event->ip_info.ip;
         ip_valid = true;
 
-        ESP_LOGI(TAG, "WiFi connected!");
-        ESP_LOGI(TAG, "IP: " IPSTR, IP2STR(&got_ip));
+        ESP_LOGI("WIFI", "WiFi connected!");
+        ESP_LOGI("WIFI", "IP: " IPSTR, IP2STR(&got_ip));
     }
 }
 

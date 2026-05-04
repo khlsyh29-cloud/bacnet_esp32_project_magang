@@ -55,52 +55,35 @@ void bacnet_send_i_am(struct sockaddr_in *dest_addr)
     int sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
     if (sock < 0) return;
 
-    uint8_t pdu[64];
-    int idx = 0;
+    int broadcast = 1;
+    setsockopt(sock, SOL_SOCKET, SO_BROADCAST, &broadcast, sizeof(broadcast));
 
-    // BVLC Header
-    pdu[idx++] = 0x81;              // BVLC type (IPv4/UDP)
-    pdu[idx++] = 0x0A;              // Function (Unicast NPDU)
+    uint8_t pkt[] = {
+        // BVLC
+        0x81, 0x0A, 0x00, 0x0E,
 
-    int len_pos = idx;              // Save position for length
-    idx += 2;                        // Skip length (will fill later)
+        // NPDU
+        0x01, 0x00,
 
-    // NPDU
-    pdu[idx++] = 0x01;              // NPDU version
-    pdu[idx++] = 0x00;              // Control (no flags)
+        // APDU I-Am
+        0x10,
 
-    // APDU - Unconfirmed Request Service (I-AM)
-    pdu[idx++] = 0x10;              // PDU Type 0, No wait (Unconfirmed-Request), I-AM service
+        // Device object (8, instance 301)
+        0xC4,
+        0x00, 0x04, 0xB5,
 
-    // I-AM Service: Device Identifier
-    pdu[idx++] = 0xC4;              // Constructed, context tag 0 (device object)
-    encode_object_id(&pdu[idx], 8, DEVICE_INSTANCE);  // Device class=8, instance=301
-    idx += 4;
+        // Max APDU 1024
+        0x22, 0x04, 0x00,
 
-    // Max APDU Length Accepted
-    pdu[idx++] = 0x2C;              // Context tag 1, 2 bytes unsigned
-    pdu[idx++] = 0x04;
-    pdu[idx++] = 0x00;              // 1024 bytes
+        // segmentation none
+        0x91, 0x00
+    };
 
-    // Segmentation Supported
-    pdu[idx++] = 0x4E;              // Context tag 2, enumerated
-    pdu[idx++] = 0x03;              // no segmentation (3)
-
-    // Vendor ID
-    pdu[idx++] = 0x2D;              // Context tag 1, 2 bytes unsigned
-    pdu[idx++] = 0x00;
-    pdu[idx++] = 0xFF;              // Vendor ID 255 (experimental)
-
-    // Fill in total length
-    int total_len = idx - 4;        // Excluding BVLC type + function + length field
-    pdu[len_pos] = (total_len >> 8) & 0xFF;
-    pdu[len_pos + 1] = total_len & 0xFF;
-
-    sendto(sock, pdu, idx, 0,
+    sendto(sock, pkt, sizeof(pkt), 0,
            (struct sockaddr *)dest_addr,
            sizeof(*dest_addr));
 
-    printf("I-AM SENT OK (len=%d bytes)\n", idx);
+    printf("I-AM SENT OK\n");
 
     close(sock);
 }

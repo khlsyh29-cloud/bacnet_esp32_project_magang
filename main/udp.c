@@ -8,6 +8,8 @@
 
 #define UDP_PORT 47808
 
+static uint32_t last_i_am = 0;
+
 // ================= UDP TASK =================
 void udp_task(void *pv)
 {
@@ -50,33 +52,27 @@ void udp_task(void *pv)
         {
             inet_ntoa_r(source.sin_addr, ip_str, sizeof(ip_str));
 
-            printf("Received from %s (HEX): ", ip_str);
-            for (int i = 0; i < r; i++)
-                printf("%02X ", (unsigned char)rx[i]);
-            printf("\n");
-            
-            printf("Received from %s (ASCII): ", ip_str);
-            for (int i = 0; i < r; i++)
-            {
-                unsigned char c = (unsigned char)rx[i];
-                if (c >= 32 && c <= 126)
-                    printf("%c", c);
-                else
-                    printf(".");
-            }
-            printf("\n");
+            // DEBUG
+            printf("RX from %s\n", ip_str);
 
-            // WHO-IS detection - check APDU type and service choice
-            // Packet structure: BVLC(2) + Length(2) + NPDU(varies) + APDU
-            // rx[10] = APDU type (0x10 = Unconfirmed-Request)
-            // rx[11] = Service choice (0x08 = WHO-IS, or 0x00 for filtered WHO-IS)
-            if (r >= 12 && (unsigned char)rx[10] == 0x10)
+            // BASIC BACnet check
+            int apdu_index = 4;
+
+            if (r > apdu_index && (unsigned char)rx[apdu_index] == 0x10)
             {
-                unsigned char service = (unsigned char)rx[11];
-                if (service == 0x08 || service == 0x00)  // WHO-IS service
+                unsigned char service = (unsigned char)rx[apdu_index + 1];
+
+                if (service == 0x08 || service == 0x00)
                 {
-                    printf("WHO-IS detected -> sending I-AM\n");
-                    bacnet_send_i_am(&source);
+                    uint32_t now = xTaskGetTickCount();
+
+                    if ((now - last_i_am) > pdMS_TO_TICKS(3000))
+                    {
+                        last_i_am = now;
+
+                        printf("WHO-IS detected -> sending I-AM\n");
+                        bacnet_send_i_am(&source);
+                    }
                 }
             }
         }

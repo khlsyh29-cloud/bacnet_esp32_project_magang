@@ -19,7 +19,16 @@ void app_main()
 
     wifi_init_sta();
 
-    vTaskDelay(pdMS_TO_TICKS(3000));
+    while (!wifi_is_connected())
+{
+    vTaskDelay(pdMS_TO_TICKS(500));
+}
+    struct sockaddr_in dest;
+dest.sin_family = AF_INET;
+dest.sin_port = htons(47808);
+dest.sin_addr.s_addr = inet_addr("255.255.255.255");
+
+bacnet_send_i_am(&dest);  
 
     xTaskCreate(udp_task, "udp_task", 8192, NULL, 5, NULL);
 
